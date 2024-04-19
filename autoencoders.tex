@@ -1,0 +1,59 @@
+\documentclass{beamer}
+
+\usefonttheme{serif}
+
+\usepackage[portuguese]{babel}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{ragged2e}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+
+\title{Autoencoders}
+\author{Eduardo de Medeiros da Silveira}
+\institute{Universidade Federal de Santa Maria}
+\date{}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{Autoencoder}
+
+\justifying
+
+Um \emph{autoencoder} é uma rede neural que tenta copiar a sua entrada para a sua saída.
+
+\begin{figure}
+
+\centering
+
+\begin{tikzpicture}[
+roundnode/.style={circle, draw=black, minimum size=10mm}
+]
+
+\node[roundnode] (hidden) {$\boldsymbol{h}$};
+\node[roundnode] (input) [below left=of hidden] {$\boldsymbol{x}$};
+\node[roundnode] (output) [below right= of hidden] {$\boldsymbol{x'}$};
+
+\draw[->] (input.north east) -- node[pos=0.35, above] {$f$} (hidden.south west);
+\draw[->] (hidden.south east) -- node[pos=0.65, above] {$g$} (output.north west);
+
+\end{tikzpicture}
+
+\caption{
+\justifying
+Esquema geral de um \emph{autoencoder}, que mapeia uma entrada $\boldsymbol{x}$ para uma saída $\boldsymbol{x'}$, através de uma representação interna $\boldsymbol{h}$. 
+O \emph{autoencoder} é composto por um codificador $f$ e por um decodificador $g$.
+}
+
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{Código, ou representação latente}
+    
+\end{frame}
+
+\end{document}
