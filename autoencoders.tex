@@ -27,9 +27,9 @@
 	Em 1970, William Chase and Herbert Simon fizeram um experimento com jogadores profissionais de xadrez, para estudar a relação entre memória, percepção e reconhecimento de padrões.
 
 	\begin{itemize}
-		\item<2-> Capazes de memorizar o tabuleiro em poucos segundos.
-		\item<3-> Somente quando as peças estavam em posições naturais.
-		\item<4-> O reconhecimento de padrões ajuda na memorização.
+		\item Capazes de memorizar o tabuleiro em poucos segundos.
+		\item Somente quando as peças estavam em posições naturais.
+		\item O reconhecimento de padrões ajuda na memorização.
 	\end{itemize}
 
 \end{frame}
@@ -100,11 +100,99 @@
 	Algumas características:
 
 	\begin{itemize}
-		\item<2-> Aprendizado (auto-)supervisionado.
-		\item<3-> Perceptron de múltiplas camadas (geralmente).
-		\item<4-> Mesmo número de neurônios na entrada e na saída.
-		\item<5-> Restrição (representação interna menor ou ruído).
+		\item Aprendizado não-supervisionado ou auto-supervisionado.
+		\item A saída não importa.
+		\item A representação latente $\boldsymbol{h}$ importa.
+		\item Restrições.
 	\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Autoencoder}
+
+	Algumas características:
+
+	\begin{itemize}
+		\item Mesmo número de neurônios na entrada e na saída.
+		\item Geralmente é simétrico.
+	\end{itemize}
+
+	\begin{figure}
+
+		\centering
+
+        \begin{tikzpicture}[
+				roundnode/.style={circle, draw=black, minimum size=2.5mm}
+			]
+
+            \def \dy {0.5}
+            \def \dx {1}
+
+            \foreach \i in {1, ..., 8} {
+                \node[roundnode] (x-\i) at (0 * \dx, 0 + \i * \dy) {};
+            }
+
+            \foreach \i in {1, ..., 4} {
+                \node[roundnode] (y-\i) at (1 * \dx, 1 + \i * \dy) {};
+            }
+
+            \foreach \i in {1, ..., 2} {
+                \node[roundnode] (z-\i) at (2 * \dx, 1.5 + \i * \dy) {};
+            }
+
+            \foreach \i in {1, ..., 4} {
+                \node[roundnode] (y'-\i) at (3 * \dx, 1 + \i * \dy) {};
+            }
+
+            \foreach \i in {1, ..., 8} {
+                \node[roundnode] (x'-\i) at (4 * \dx, 0 + \i * \dy) {};
+            }
+
+            \foreach \i in {1, ..., 8} {
+                \foreach \j in {1, ..., 4} {
+                    \draw[color=gray] (x-\i) -- (y-\j);
+                }
+            }
+
+            \foreach \i in {1, ..., 8} {
+                \foreach \j in {1, ..., 4} {
+                    \draw[color=gray] (x'-\i) -- (y'-\j);
+                }
+            }
+
+            \foreach \i in {1, ..., 4} {
+                \foreach \j in {1, ..., 2} {
+                    \draw[color=gray] (y-\i) -- (z-\j);
+                }
+            }
+
+            \foreach \i in {1, ..., 4} {
+                \foreach \j in {1, ..., 2} {
+                    \draw[color=gray] (y'-\i) -- (z-\j);
+                }
+            }
+
+		\end{tikzpicture}
+
+        \caption{Exemplo de um autoencoder.}
+
+	\end{figure}
+
+\end{frame}
+
+\begin{frame}{Undercomplete Autoencoder}
+
+	\justifying
+
+	\begin{itemize}
+		\item A dimensão de $\boldsymbol{h}$ é menor do que a dimensão de $\boldsymbol{x}$.
+		\item Minimiza-se $L$, que calcula a dissimilaridade de $\boldsymbol{x}$ e $\boldsymbol{x'}$.
+		\item Não há garantia de que $\boldsymbol{h}$ capture informações importantes.
+	\end{itemize}
+
+	\begin{equation*}
+		L(\boldsymbol{x}, \boldsymbol{x'}) = L(\boldsymbol{x}, g(f(\boldsymbol{x})))
+	\end{equation*}
 
 \end{frame}
 
