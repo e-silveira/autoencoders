@@ -1,9 +1,11 @@
-\documentclass{beamer}
+\documentclass[dvipsnames]{beamer}
 
 \usepackage[portuguese]{babel}
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{ragged2e}
+\usepackage{amsmath}
+\usepackage{amssymb}
 
 \usepackage{tikz}
 \usetikzlibrary{positioning}
@@ -115,66 +117,68 @@
 	\begin{itemize}
 		\item Mesmo número de neurônios na entrada e na saída.
 		\item Geralmente é simétrico.
+		\item \emph{Stacked} ou \emph{deep autoencoders}.
+		\item Nem sempre $\boldsymbol{h}$ vai capturar informações importantes.
 	\end{itemize}
 
 	\begin{figure}
 
 		\centering
 
-        \begin{tikzpicture}[
+		\begin{tikzpicture}[
 				roundnode/.style={circle, draw=black, minimum size=2.5mm}
 			]
 
-            \def \dy {0.5}
-            \def \dx {1}
+			\def \dy {0.5}
+			\def \dx {1}
 
-            \foreach \i in {1, ..., 8} {
-                \node[roundnode] (x-\i) at (0 * \dx, 0 + \i * \dy) {};
-            }
+			\foreach \i in {1, ..., 8} {
+					\node[roundnode] (x-\i) at (0 * \dx, 0 + \i * \dy) {};
+				}
 
-            \foreach \i in {1, ..., 4} {
-                \node[roundnode] (y-\i) at (1 * \dx, 1 + \i * \dy) {};
-            }
+			\foreach \i in {1, ..., 4} {
+					\node[roundnode] (y-\i) at (1 * \dx, 1 + \i * \dy) {};
+				}
 
-            \foreach \i in {1, ..., 2} {
-                \node[roundnode] (z-\i) at (2 * \dx, 1.5 + \i * \dy) {};
-            }
+			\foreach \i in {1, ..., 2} {
+					\node[roundnode] (z-\i) at (2 * \dx, 1.5 + \i * \dy) {};
+				}
 
-            \foreach \i in {1, ..., 4} {
-                \node[roundnode] (y'-\i) at (3 * \dx, 1 + \i * \dy) {};
-            }
+			\foreach \i in {1, ..., 4} {
+					\node[roundnode] (y'-\i) at (3 * \dx, 1 + \i * \dy) {};
+				}
 
-            \foreach \i in {1, ..., 8} {
-                \node[roundnode] (x'-\i) at (4 * \dx, 0 + \i * \dy) {};
-            }
+			\foreach \i in {1, ..., 8} {
+					\node[roundnode] (x'-\i) at (4 * \dx, 0 + \i * \dy) {};
+				}
 
-            \foreach \i in {1, ..., 8} {
-                \foreach \j in {1, ..., 4} {
-                    \draw[color=gray] (x-\i) -- (y-\j);
-                }
-            }
+			\foreach \i in {1, ..., 8} {
+					\foreach \j in {1, ..., 4} {
+							\draw[color=gray] (x-\i) -- (y-\j);
+						}
+				}
 
-            \foreach \i in {1, ..., 8} {
-                \foreach \j in {1, ..., 4} {
-                    \draw[color=gray] (x'-\i) -- (y'-\j);
-                }
-            }
+			\foreach \i in {1, ..., 8} {
+					\foreach \j in {1, ..., 4} {
+							\draw[color=gray] (x'-\i) -- (y'-\j);
+						}
+				}
 
-            \foreach \i in {1, ..., 4} {
-                \foreach \j in {1, ..., 2} {
-                    \draw[color=gray] (y-\i) -- (z-\j);
-                }
-            }
+			\foreach \i in {1, ..., 4} {
+					\foreach \j in {1, ..., 2} {
+							\draw[color=gray] (y-\i) -- (z-\j);
+						}
+				}
 
-            \foreach \i in {1, ..., 4} {
-                \foreach \j in {1, ..., 2} {
-                    \draw[color=gray] (y'-\i) -- (z-\j);
-                }
-            }
+			\foreach \i in {1, ..., 4} {
+					\foreach \j in {1, ..., 2} {
+							\draw[color=gray] (y'-\i) -- (z-\j);
+						}
+				}
 
 		\end{tikzpicture}
 
-        \caption{Exemplo de um autoencoder.}
+		\caption{Exemplo de um autoencoder.}
 
 	\end{figure}
 
@@ -187,12 +191,106 @@
 	\begin{itemize}
 		\item A dimensão de $\boldsymbol{h}$ é menor do que a dimensão de $\boldsymbol{x}$.
 		\item Minimiza-se $L$, que calcula a dissimilaridade de $\boldsymbol{x}$ e $\boldsymbol{x'}$.
-		\item Não há garantia de que $\boldsymbol{h}$ capture informações importantes.
 	\end{itemize}
 
 	\begin{equation*}
 		L(\boldsymbol{x}, \boldsymbol{x'}) = L(\boldsymbol{x}, g(f(\boldsymbol{x})))
 	\end{equation*}
+
+\end{frame}
+
+\begin{frame}{Pré-treino não-supervisionado}
+
+	\justifying
+
+	\begin{itemize}
+		\item Queremos treinar um modelo supervisionado.
+		\item Temos poucas observações rotuladas.
+		\item Podemos treinar um \emph{autoencoder} e reutilizar o \emph{encoder}.
+		\item Congelamento dos parâmetros.
+	\end{itemize}
+
+	\begin{figure}
+
+		\centering
+
+		\begin{tikzpicture}[
+				roundnode/.style={draw=black, thick, rounded corners}
+			]
+
+			\def \dx {5};
+
+			\node[roundnode, minimum width=32mm] (output) at (0, 4) {Saída};
+			\node[roundnode, minimum width=16mm] (h3) at (0, 3) {$h_3$};
+			\node[roundnode, minimum width=8mm] (h2) at (0, 2) {$h_2$};
+			\node[roundnode, minimum width=16mm] (h1) at (0, 1) {$h_1$};
+			\node[roundnode, minimum width=32mm] (input) at (0, 0) {Entrada};
+
+			\node[roundnode] (output') at (\dx, 4) {Saída};
+			\node[fill=black, minimum width=8mm, minimum height=8mm] (h3') at (\dx, 3.05) {};
+			\node[roundnode, RoyalBlue, minimum width=8mm] (h2') at (\dx, 2) {$h_2$};
+			\node[roundnode, RoyalBlue, minimum width=16mm] (h1') at (\dx, 1) {$h_1$};
+			\node[roundnode, minimum width=32mm] (input') at (\dx, 0) {Entrada};
+
+			\draw[->, thick] (input) -- (h1);
+			\draw[->, thick] (h1) -- (h2);
+			\draw[->, thick] (h2) -- (h3);
+			\draw[->, thick] (h3) -- (output);
+
+			\draw[->, RoyalBlue, thick] (input') -- (h1');
+			\draw[->, RoyalBlue, thick] (h1') -- (h2');
+			\draw[->, thick] (h2') -- (h3');
+			\draw[->, thick] (h3') -- (output');
+
+			\draw[->, dashed, RoyalBlue, thick] (h1) -- (h1');
+			\draw[->, dashed, RoyalBlue, thick] (h2) -- (h2');
+
+		\end{tikzpicture}
+
+		\caption{Aproveitamento da função de \emph{encoding} em outra rede neural.}
+
+	\end{figure}
+
+\end{frame}
+
+\begin{frame}{Enlace de pesos}
+
+	\begin{itemize}
+		\item Se o \emph{autoencoder} for simétrico, podemos criar um enlace entre os parâmetros do \emph{encoder} e \emph{decoder}.
+		\item Reduzimos pela metade o número de parâmetros.
+		\item O vetor de viés é mantido.
+	\end{itemize}
+
+	\begin{figure}
+
+		\centering
+
+		\begin{tikzpicture}[
+				roundnode/.style={draw=black, thick, rounded corners}
+			]
+
+			\def \dx {5};
+
+			\node[roundnode, minimum width=32mm] (output) at (0, 4) {Saída};
+			\node[roundnode, minimum width=16mm] (h3) at (0, 3) {$h_3$};
+			\node[roundnode, minimum width=8mm] (h2) at (0, 2) {$h_2$};
+			\node[roundnode, minimum width=16mm] (h1) at (0, 1) {$h_1$};
+			\node[roundnode, minimum width=32mm] (input) at (0, 0) {Entrada};
+
+			\draw[->, RoyalBlue, thick] (input) -- node[midway, left] {\small$\boldsymbol{W}_1$} (h1);
+			\draw[->, Green, thick] (h1) -- node[midway, right] {\small$\boldsymbol{W}_2$} (h2);
+			\draw[->, Green, thick] (h2) -- node[midway, right] {\small$\boldsymbol{W}_3$} (h3);
+			\draw[->, RoyalBlue, thick] (h3) -- node[midway, left] {\small$\boldsymbol{W}_4$} (output);
+
+			\draw[RoyalBlue, dashed, thick] (0, 0.5) .. controls (3, 0.5) and (3, 3.5) .. node[midway, right] {$\boldsymbol{W}_4 = \boldsymbol{W}_1^\top$} (0, 3.5);
+			\draw[Green, dashed, thick] (0, 1.5) .. controls (-1, 1.5) and (-1, 2.5) .. node[midway, left] {$\boldsymbol{W}_3 = \boldsymbol{W}_2^\top$} (0, 2.5);
+
+
+		\end{tikzpicture}
+
+		\caption{Aproveitamento da função de \emph{encoding} em outra rede neural.}
+
+	\end{figure}
 
 \end{frame}
 
