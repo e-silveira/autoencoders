@@ -64,6 +64,14 @@
 
 \end{frame}
 
+\begin{frame}{Manifold Hypothesis}
+
+    \begin{itemize}
+        \item Conjuntos de dados com várias dimensões existem em \emph{manifolds} de menor dimensão.
+    \end{itemize}
+
+\end{frame}
+
 \begin{frame}{Autoencoder}
 
 	\justifying
@@ -253,7 +261,7 @@
 
 \end{frame}
 
-\begin{frame}{Enlace de pesos}
+\begin{frame}{Enlace de parâmetros}
 
 	\begin{itemize}
 		\item Se o \emph{autoencoder} for simétrico, podemos criar um enlace entre os parâmetros do \emph{encoder} e \emph{decoder}.
@@ -288,9 +296,126 @@
 
 		\end{tikzpicture}
 
-		\caption{Aproveitamento da função de \emph{encoding} em outra rede neural.}
+		\caption{Enlace dos parâmetros de um \emph{encoder} e um \emph{decoder}.}
 
 	\end{figure}
+
+\end{frame}
+
+\begin{frame}{Treinamento por Camadas}
+
+	Em vez de treinar todo o \emph{autoencoder}, podemos dividir o treino por camadas.
+
+	\begin{figure}
+
+		\centering
+
+		\begin{tikzpicture}[
+				roundnode/.style={draw=black, thick, rounded corners}
+			]
+
+			\node[roundnode, minimum width=32mm, Green] (output1) at (0, 4) {Saída};
+			\node[roundnode, minimum width=16mm, RoyalBlue] (h1) at (0, 1) {$h_1$};
+			\node[roundnode, minimum width=32mm] (input1) at (0, 0) {Entrada};
+
+			\node[roundnode, minimum width=16mm, Purple] (output2) at (3, 3) {Saída};
+			\node[roundnode, minimum width=8mm, Orange] (h2) at (3, 2) {$h_2$};
+			\node[roundnode, minimum width=16mm] (input2) at (3, 1) {Entrada};
+
+			\node[roundnode, minimum width=32mm, Green] (output3) at (6, 4) {Saída};
+			\node[roundnode, minimum width=16mm, Purple] (h3) at (6, 3) {$h_3$};
+			\node[roundnode, minimum width=8mm, Orange] (h2') at (6, 2) {$h_2$};
+			\node[roundnode, minimum width=16mm, RoyalBlue] (h1') at (6, 1) {$h_1$};
+			\node[roundnode, minimum width=32mm] (input3) at (6, 0) {Entrada};
+
+			\draw[->, thick, RoyalBlue] (input1) -- (h1);
+			\draw[->, thick, Green] (h1) -- (output1);
+
+			\draw[->, thick, Orange] (input2) -- (h2);
+			\draw[->, thick, Purple] (h2) -- (output2);
+
+			\draw[->, thick, RoyalBlue] (input3) -- (h1');
+			\draw[->, thick, Orange] (h1') -- (h2');
+			\draw[->, thick, Purple] (h2') -- (h3);
+			\draw[->, thick, Green] (h3) -- (output3);
+
+			\draw[->, dashed, thick, RoyalBlue] (h1) -- (1.8, 1) -- (1.8, 0.4) -- (4.2, 0.4) -- (4.2, 1) -- (h1');
+			\draw[->, dashed, thick, Orange] (h2) -- (h2');
+			\draw[->, dashed, thick, Purple] (output2) -- (h3);
+			\draw[->, dashed, thick, Green] (output1) -- (output3);
+
+		\end{tikzpicture}
+
+		\caption{Treinamento por camadas de um \emph{autoencoder}. Primeiramente, treinamos as camadas $h_1$ e Saída. Depois, treinamos $h_2$ e $h_3$.}
+
+	\end{figure}
+
+\end{frame}
+
+\begin{frame}{Convolutional Autoencoders}
+
+	\begin{itemize}
+		\item Camadas convolucionais em vez de camadas densas.
+		\item Principalmente para imagens.
+		\item O \emph{encoder} faz a compressão da imagem, enquanto o \emph{decoder} faz a decompressão (camadas transpostas).
+	\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Overcomplete Autoencoders}
+
+	\begin{itemize}
+		\item A representação latente $\boldsymbol{h}$ tem dimensão maior ou igual à da entrada.
+	\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Denoising Autoencoders}
+
+	\begin{itemize}
+		\item Adição de ruído na entrada (Gaussiano ou Dropout).
+		\item Treinamento para recuperar os dados originais.
+	\end{itemize}
+
+    $$L(\boldsymbol{x}, g(f(\tilde{\boldsymbol{x}})))$$
+
+	\begin{figure}
+
+		\centering
+
+		\begin{tikzpicture}[
+				roundnode/.style={draw=black, thick, rounded corners}
+			]
+
+			\node[roundnode, minimum width=32mm] (output) at (0, 3) {Saída};
+			\node[roundnode, minimum width=16mm] (h) at (0, 2) {$h$};
+			\node[roundnode, fill=Red, text=White] (noise) at (0, 1) {Ruído};
+			\node[roundnode, minimum width=32mm] (input) at (0, 0) {Entrada};
+
+			\draw[->, thick] (input) -- (noise);
+			\draw[->, thick] (noise) -- (h);
+			\draw[->, thick] (h) -- (output);
+
+		\end{tikzpicture}
+
+        \caption{
+			\justifying
+			Esquema de um \emph{denoising autoencoder}. O ruído pode representar a adição de ruído Gaussiano aos dados ou uma camada de Dropout.
+		}
+
+	\end{figure}
+
+\end{frame}
+
+\begin{frame}{Sparse Autoencoders}
+
+    \begin{itemize}
+        \item A representação latente é penalizada por sua esparsidade.
+        \item Escolhemos uma quantidade de neurônios que queremos ativados.
+        \item Cada neurônio acaba representando uma característica específica.
+    \end{itemize}
+
+    $$L(\boldsymbol{x}, \boldsymbol{x'}) + \Omega(\boldsymbol{h}) = L(\boldsymbol{x}, g(f(\boldsymbol{x}))) + \Omega(\boldsymbol{h})$$
 
 \end{frame}
 
