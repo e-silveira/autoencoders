@@ -66,9 +66,15 @@
 
 \begin{frame}{Manifold Hypothesis}
 
-    \begin{itemize}
-        \item Conjuntos de dados com várias dimensões existem em \emph{manifolds} de menor dimensão.
-    \end{itemize}
+	\begin{itemize}
+		\item Conjuntos de dados com várias dimensões existem em \emph{manifolds} de menor dimensão.
+	\end{itemize}
+
+	\begin{figure}
+		\centering
+		\includegraphics[scale=0.2]{img/tsne-mnist.png}
+        \caption{Aplicação da técnica T-SNE ao MNIST.}
+	\end{figure}
 
 \end{frame}
 
@@ -360,6 +366,12 @@
 		\item O \emph{encoder} faz a compressão da imagem, enquanto o \emph{decoder} faz a decompressão (camadas transpostas).
 	\end{itemize}
 
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.33]{img/conv-autoencoder.png} 
+        \caption{Exemplo de um autoencoder convolucional.}
+    \end{figure}
+
 \end{frame}
 
 \begin{frame}{Overcomplete Autoencoders}
@@ -367,6 +379,47 @@
 	\begin{itemize}
 		\item A representação latente $\boldsymbol{h}$ tem dimensão maior ou igual à da entrada.
 	\end{itemize}
+
+	\begin{figure}
+
+		\centering
+
+		\begin{tikzpicture}[
+				roundnode/.style={circle, draw=black, minimum size=2.5mm}
+			]
+
+			\def \dy {0.5}
+			\def \dx {1}
+
+			\foreach \i in {1, ..., 4} {
+					\node[roundnode] (x-\i) at (0 * \dx, 1 + \i * \dy) {};
+				}
+
+			\foreach \i in {1, ..., 8} {
+					\node[roundnode] (y-\i) at (1 * \dx, 0 + \i * \dy) {};
+				}
+
+			\foreach \i in {1, ..., 4} {
+					\node[roundnode] (x'-\i) at (2 * \dx, 1 + \i * \dy) {};
+				}
+
+			\foreach \i in {1, ..., 4} {
+					\foreach \j in {1, ..., 8} {
+							\draw[color=gray] (x-\i) -- (y-\j);
+						}
+				}
+
+			\foreach \i in {1, ..., 4} {
+					\foreach \j in {1, ..., 8} {
+							\draw[color=gray] (x'-\i) -- (y-\j);
+						}
+				}
+
+		\end{tikzpicture}
+
+		\caption{Exemplo de um autoencoder overcomplete.}
+
+	\end{figure}
 
 \end{frame}
 
@@ -377,7 +430,7 @@
 		\item Treinamento para recuperar os dados originais.
 	\end{itemize}
 
-    $$L(\boldsymbol{x}, g(f(\tilde{\boldsymbol{x}})))$$
+	$$L(\boldsymbol{x}, g(f(\tilde{\boldsymbol{x}})))$$
 
 	\begin{figure}
 
@@ -398,7 +451,7 @@
 
 		\end{tikzpicture}
 
-        \caption{
+		\caption{
 			\justifying
 			Esquema de um \emph{denoising autoencoder}. O ruído pode representar a adição de ruído Gaussiano aos dados ou uma camada de Dropout.
 		}
@@ -409,14 +462,24 @@
 
 \begin{frame}{Sparse Autoencoders}
 
-    \begin{itemize}
-        \item A representação latente é penalizada por sua esparsidade.
-        \item Escolhemos uma quantidade de neurônios que queremos ativados.
-        \item Cada neurônio acaba representando uma característica específica.
-    \end{itemize}
+	\begin{itemize}
+		\item A representação latente é penalizada por sua esparsidade.
+		\item Escolhemos uma quantidade de neurônios que queremos ativados.
+		\item Cada neurônio acaba representando uma característica específica.
+	\end{itemize}
 
-    $$L(\boldsymbol{x}, \boldsymbol{x'}) + \Omega(\boldsymbol{h}) = L(\boldsymbol{x}, g(f(\boldsymbol{x}))) + \Omega(\boldsymbol{h})$$
+	$$L(\boldsymbol{x}, \boldsymbol{x'}) + \Omega(\boldsymbol{h}) = L(\boldsymbol{x}, g(f(\boldsymbol{x}))) + \Omega(\boldsymbol{h})$$
 
+\end{frame}
+
+\begin{frame}{Variational Autoencoders}
+	\begin{itemize}
+		\item São probabilísticos (a saída não é determinística).
+		\item São generativos.
+		\item O \emph{encoder} produz uma média $\boldsymbol{\mu}$ e desvio padrão $\boldsymbol{\sigma}$.
+		\item A representação latente é amostrada de $\mathcal{N}(\mu_i, \sigma_i)$.
+		\item O \emph{decoder} age sobre a representação amostrada.
+	\end{itemize}
 \end{frame}
 
 \end{document}
