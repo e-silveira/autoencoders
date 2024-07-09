@@ -22,6 +22,16 @@
 
 \frame{\titlepage}
 
+\begin{frame}{Capítulo Escolhido}
+	\begin{itemize}
+		\item \emph{Autoencoders, GANs, and Diffusion Models}.
+	\end{itemize}
+	\begin{figure}
+		\centering
+		\includegraphics[scale=0.2]{img/hands-on.jpg}
+	\end{figure}
+\end{frame}
+
 \begin{frame}{Representação Eficiente de Dados}
 
 	\justifying
@@ -73,7 +83,7 @@
 	\begin{figure}
 		\centering
 		\includegraphics[scale=0.2]{img/tsne-mnist.png}
-        \caption{Aplicação da técnica T-SNE ao MNIST.}
+		\caption{Aplicação da técnica T-SNE ao MNIST.}
 	\end{figure}
 
 \end{frame}
@@ -213,151 +223,6 @@
 
 \end{frame}
 
-\begin{frame}{Pré-treino não-supervisionado}
-
-	\justifying
-
-	\begin{itemize}
-		\item Queremos treinar um modelo supervisionado.
-		\item Temos poucas observações rotuladas.
-		\item Podemos treinar um \emph{autoencoder} e reutilizar o \emph{encoder}.
-		\item Congelamento dos parâmetros.
-	\end{itemize}
-
-	\begin{figure}
-
-		\centering
-
-		\begin{tikzpicture}[
-				roundnode/.style={draw=black, thick, rounded corners}
-			]
-
-			\def \dx {5};
-
-			\node[roundnode, minimum width=32mm] (output) at (0, 4) {Saída};
-			\node[roundnode, minimum width=16mm] (h3) at (0, 3) {$h_3$};
-			\node[roundnode, minimum width=8mm] (h2) at (0, 2) {$h_2$};
-			\node[roundnode, minimum width=16mm] (h1) at (0, 1) {$h_1$};
-			\node[roundnode, minimum width=32mm] (input) at (0, 0) {Entrada};
-
-			\node[roundnode] (output') at (\dx, 4) {Saída};
-			\node[fill=black, minimum width=8mm, minimum height=8mm] (h3') at (\dx, 3.05) {};
-			\node[roundnode, RoyalBlue, minimum width=8mm] (h2') at (\dx, 2) {$h_2$};
-			\node[roundnode, RoyalBlue, minimum width=16mm] (h1') at (\dx, 1) {$h_1$};
-			\node[roundnode, minimum width=32mm] (input') at (\dx, 0) {Entrada};
-
-			\draw[->, thick] (input) -- (h1);
-			\draw[->, thick] (h1) -- (h2);
-			\draw[->, thick] (h2) -- (h3);
-			\draw[->, thick] (h3) -- (output);
-
-			\draw[->, RoyalBlue, thick] (input') -- (h1');
-			\draw[->, RoyalBlue, thick] (h1') -- (h2');
-			\draw[->, thick] (h2') -- (h3');
-			\draw[->, thick] (h3') -- (output');
-
-			\draw[->, dashed, RoyalBlue, thick] (h1) -- (h1');
-			\draw[->, dashed, RoyalBlue, thick] (h2) -- (h2');
-
-		\end{tikzpicture}
-
-		\caption{Aproveitamento da função de \emph{encoding} em outra rede neural.}
-
-	\end{figure}
-
-\end{frame}
-
-\begin{frame}{Enlace de parâmetros}
-
-	\begin{itemize}
-		\item Se o \emph{autoencoder} for simétrico, podemos criar um enlace entre os parâmetros do \emph{encoder} e \emph{decoder}.
-		\item Reduzimos pela metade o número de parâmetros.
-		\item O vetor de viés é mantido.
-	\end{itemize}
-
-	\begin{figure}
-
-		\centering
-
-		\begin{tikzpicture}[
-				roundnode/.style={draw=black, thick, rounded corners}
-			]
-
-			\def \dx {5};
-
-			\node[roundnode, minimum width=32mm] (output) at (0, 4) {Saída};
-			\node[roundnode, minimum width=16mm] (h3) at (0, 3) {$h_3$};
-			\node[roundnode, minimum width=8mm] (h2) at (0, 2) {$h_2$};
-			\node[roundnode, minimum width=16mm] (h1) at (0, 1) {$h_1$};
-			\node[roundnode, minimum width=32mm] (input) at (0, 0) {Entrada};
-
-			\draw[->, RoyalBlue, thick] (input) -- node[midway, left] {\small$\boldsymbol{W}_1$} (h1);
-			\draw[->, Green, thick] (h1) -- node[midway, right] {\small$\boldsymbol{W}_2$} (h2);
-			\draw[->, Green, thick] (h2) -- node[midway, right] {\small$\boldsymbol{W}_3$} (h3);
-			\draw[->, RoyalBlue, thick] (h3) -- node[midway, left] {\small$\boldsymbol{W}_4$} (output);
-
-			\draw[RoyalBlue, dashed, thick] (0, 0.5) .. controls (3, 0.5) and (3, 3.5) .. node[midway, right] {$\boldsymbol{W}_4 = \boldsymbol{W}_1^\top$} (0, 3.5);
-			\draw[Green, dashed, thick] (0, 1.5) .. controls (-1, 1.5) and (-1, 2.5) .. node[midway, left] {$\boldsymbol{W}_3 = \boldsymbol{W}_2^\top$} (0, 2.5);
-
-
-		\end{tikzpicture}
-
-		\caption{Enlace dos parâmetros de um \emph{encoder} e um \emph{decoder}.}
-
-	\end{figure}
-
-\end{frame}
-
-\begin{frame}{Treinamento por Camadas}
-
-	Em vez de treinar todo o \emph{autoencoder}, podemos dividir o treino por camadas.
-
-	\begin{figure}
-
-		\centering
-
-		\begin{tikzpicture}[
-				roundnode/.style={draw=black, thick, rounded corners}
-			]
-
-			\node[roundnode, minimum width=32mm, Green] (output1) at (0, 4) {Saída};
-			\node[roundnode, minimum width=16mm, RoyalBlue] (h1) at (0, 1) {$h_1$};
-			\node[roundnode, minimum width=32mm] (input1) at (0, 0) {Entrada};
-
-			\node[roundnode, minimum width=16mm, Purple] (output2) at (3, 3) {Saída};
-			\node[roundnode, minimum width=8mm, Orange] (h2) at (3, 2) {$h_2$};
-			\node[roundnode, minimum width=16mm] (input2) at (3, 1) {Entrada};
-
-			\node[roundnode, minimum width=32mm, Green] (output3) at (6, 4) {Saída};
-			\node[roundnode, minimum width=16mm, Purple] (h3) at (6, 3) {$h_3$};
-			\node[roundnode, minimum width=8mm, Orange] (h2') at (6, 2) {$h_2$};
-			\node[roundnode, minimum width=16mm, RoyalBlue] (h1') at (6, 1) {$h_1$};
-			\node[roundnode, minimum width=32mm] (input3) at (6, 0) {Entrada};
-
-			\draw[->, thick, RoyalBlue] (input1) -- (h1);
-			\draw[->, thick, Green] (h1) -- (output1);
-
-			\draw[->, thick, Orange] (input2) -- (h2);
-			\draw[->, thick, Purple] (h2) -- (output2);
-
-			\draw[->, thick, RoyalBlue] (input3) -- (h1');
-			\draw[->, thick, Orange] (h1') -- (h2');
-			\draw[->, thick, Purple] (h2') -- (h3);
-			\draw[->, thick, Green] (h3) -- (output3);
-
-			\draw[->, dashed, thick, RoyalBlue] (h1) -- (1.8, 1) -- (1.8, 0.4) -- (4.2, 0.4) -- (4.2, 1) -- (h1');
-			\draw[->, dashed, thick, Orange] (h2) -- (h2');
-			\draw[->, dashed, thick, Purple] (output2) -- (h3);
-			\draw[->, dashed, thick, Green] (output1) -- (output3);
-
-		\end{tikzpicture}
-
-		\caption{Treinamento por camadas de um \emph{autoencoder}. Primeiramente, treinamos as camadas $h_1$ e Saída. Depois, treinamos $h_2$ e $h_3$.}
-
-	\end{figure}
-
-\end{frame}
-
 \begin{frame}{Convolutional Autoencoders}
 
 	\begin{itemize}
@@ -366,11 +231,11 @@
 		\item O \emph{encoder} faz a compressão da imagem, enquanto o \emph{decoder} faz a decompressão (camadas transpostas).
 	\end{itemize}
 
-    \begin{figure}
-        \centering
-        \includegraphics[scale=0.33]{img/conv-autoencoder.png} 
-        \caption{Exemplo de um autoencoder convolucional.}
-    \end{figure}
+	\begin{figure}
+		\centering
+		\includegraphics[scale=0.33]{img/conv-autoencoder.png}
+		\caption{Exemplo de um autoencoder convolucional.}
+	\end{figure}
 
 \end{frame}
 
@@ -472,14 +337,244 @@
 
 \end{frame}
 
-\begin{frame}{Variational Autoencoders}
+\begin{frame}{Pré-treino não-supervisionado}
+
+	\justifying
+
 	\begin{itemize}
-		\item São probabilísticos (a saída não é determinística).
-		\item São generativos.
-		\item O \emph{encoder} produz uma média $\boldsymbol{\mu}$ e desvio padrão $\boldsymbol{\sigma}$.
-		\item A representação latente é amostrada de $\mathcal{N}(\mu_i, \sigma_i)$.
-		\item O \emph{decoder} age sobre a representação amostrada.
+		\item Queremos treinar um modelo supervisionado.
+		\item Temos poucas observações rotuladas.
+		\item Podemos treinar um \emph{autoencoder} e reutilizar o \emph{encoder}.
+		\item Congelamento dos parâmetros.
 	\end{itemize}
+
+	\begin{figure}
+
+		\centering
+
+		\begin{tikzpicture}[
+				roundnode/.style={draw=black, thick, rounded corners}
+			]
+
+			\def \dx {5};
+
+			\node[roundnode, minimum width=32mm] (output) at (0, 4) {Saída};
+			\node[roundnode, minimum width=16mm] (h3) at (0, 3) {$h_3$};
+			\node[roundnode, minimum width=8mm] (h2) at (0, 2) {$h_2$};
+			\node[roundnode, minimum width=16mm] (h1) at (0, 1) {$h_1$};
+			\node[roundnode, minimum width=32mm] (input) at (0, 0) {Entrada};
+
+			\node[roundnode] (output') at (\dx, 4) {Saída};
+			\node[fill=black, minimum width=8mm, minimum height=8mm] (h3') at (\dx, 3.05) {};
+			\node[roundnode, RoyalBlue, minimum width=8mm] (h2') at (\dx, 2) {$h_2$};
+			\node[roundnode, RoyalBlue, minimum width=16mm] (h1') at (\dx, 1) {$h_1$};
+			\node[roundnode, minimum width=32mm] (input') at (\dx, 0) {Entrada};
+
+			\draw[->, thick] (input) -- (h1);
+			\draw[->, thick] (h1) -- (h2);
+			\draw[->, thick] (h2) -- (h3);
+			\draw[->, thick] (h3) -- (output);
+
+			\draw[->, RoyalBlue, thick] (input') -- (h1');
+			\draw[->, RoyalBlue, thick] (h1') -- (h2');
+			\draw[->, thick] (h2') -- (h3');
+			\draw[->, thick] (h3') -- (output');
+
+			\draw[->, dashed, RoyalBlue, thick] (h1) -- (h1');
+			\draw[->, dashed, RoyalBlue, thick] (h2) -- (h2');
+
+		\end{tikzpicture}
+
+		\caption{Aproveitamento da função de \emph{encoding} em outra rede neural.}
+
+	\end{figure}
+
+\end{frame}
+
+\begin{frame}{Pré-treino não-supervisionado}
+	\begin{itemize}
+		\item Aumenta a generalização do modelo (remove ruído).
+		\item Acelera o treinamento.
+		\item Pode ocorrer perda de informação importante.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Enlace de parâmetros}
+
+	\begin{itemize}
+		\item Se o \emph{autoencoder} for simétrico, podemos criar um enlace entre os parâmetros do \emph{encoder} e \emph{decoder}.
+		\item Reduzimos pela metade o número de parâmetros.
+		\item O vetor de viés é mantido.
+	\end{itemize}
+
+	\begin{figure}
+
+		\centering
+
+		\begin{tikzpicture}[
+				roundnode/.style={draw=black, thick, rounded corners}
+			]
+
+			\def \dx {5};
+
+			\node[roundnode, minimum width=32mm] (output) at (0, 4) {Saída};
+			\node[roundnode, minimum width=16mm] (h3) at (0, 3) {$h_3$};
+			\node[roundnode, minimum width=8mm] (h2) at (0, 2) {$h_2$};
+			\node[roundnode, minimum width=16mm] (h1) at (0, 1) {$h_1$};
+			\node[roundnode, minimum width=32mm] (input) at (0, 0) {Entrada};
+
+			\draw[->, RoyalBlue, thick] (input) -- node[midway, left] {\small$\boldsymbol{W}_1$} (h1);
+			\draw[->, Green, thick] (h1) -- node[midway, right] {\small$\boldsymbol{W}_2$} (h2);
+			\draw[->, Green, thick] (h2) -- node[midway, right] {\small$\boldsymbol{W}_3$} (h3);
+			\draw[->, RoyalBlue, thick] (h3) -- node[midway, left] {\small$\boldsymbol{W}_4$} (output);
+
+			\draw[RoyalBlue, dashed, thick] (0, 0.5) .. controls (3, 0.5) and (3, 3.5) .. node[midway, right] {$\boldsymbol{W}_4 = \boldsymbol{W}_1^\top$} (0, 3.5);
+			\draw[Green, dashed, thick] (0, 1.5) .. controls (-1, 1.5) and (-1, 2.5) .. node[midway, left] {$\boldsymbol{W}_3 = \boldsymbol{W}_2^\top$} (0, 2.5);
+
+
+		\end{tikzpicture}
+
+		\caption{Enlace dos parâmetros de um \emph{encoder} e um \emph{decoder}.}
+
+	\end{figure}
+
+\end{frame}
+
+\begin{frame}{Treinamento por Camadas}
+
+	Em vez de treinar todo o \emph{autoencoder}, podemos dividir o treino por camadas.
+
+	\begin{figure}
+
+		\centering
+
+		\begin{tikzpicture}[
+				roundnode/.style={draw=black, thick, rounded corners}
+			]
+
+			\node[roundnode, minimum width=32mm, Green] (output1) at (0, 4) {Saída};
+			\node[roundnode, minimum width=16mm, RoyalBlue] (h1) at (0, 1) {$h_1$};
+			\node[roundnode, minimum width=32mm] (input1) at (0, 0) {Entrada};
+
+			\node[roundnode, minimum width=16mm, Purple] (output2) at (3, 3) {Saída};
+			\node[roundnode, minimum width=8mm, Orange] (h2) at (3, 2) {$h_2$};
+			\node[roundnode, minimum width=16mm] (input2) at (3, 1) {Entrada};
+
+			\node[roundnode, minimum width=32mm, Green] (output3) at (6, 4) {Saída};
+			\node[roundnode, minimum width=16mm, Purple] (h3) at (6, 3) {$h_3$};
+			\node[roundnode, minimum width=8mm, Orange] (h2') at (6, 2) {$h_2$};
+			\node[roundnode, minimum width=16mm, RoyalBlue] (h1') at (6, 1) {$h_1$};
+			\node[roundnode, minimum width=32mm] (input3) at (6, 0) {Entrada};
+
+			\draw[->, thick, RoyalBlue] (input1) -- (h1);
+			\draw[->, thick, Green] (h1) -- (output1);
+
+			\draw[->, thick, Orange] (input2) -- (h2);
+			\draw[->, thick, Purple] (h2) -- (output2);
+
+			\draw[->, thick, RoyalBlue] (input3) -- (h1');
+			\draw[->, thick, Orange] (h1') -- (h2');
+			\draw[->, thick, Purple] (h2') -- (h3);
+			\draw[->, thick, Green] (h3) -- (output3);
+
+			\draw[->, dashed, thick, RoyalBlue] (h1) -- (1.8, 1) -- (1.8, 0.4) -- (4.2, 0.4) -- (4.2, 1) -- (h1');
+			\draw[->, dashed, thick, Orange] (h2) -- (h2');
+			\draw[->, dashed, thick, Purple] (output2) -- (h3);
+			\draw[->, dashed, thick, Green] (output1) -- (output3);
+
+		\end{tikzpicture}
+
+		\caption{Treinamento por camadas de um \emph{autoencoder}. Primeiramente, treinamos as camadas $h_1$ e Saída. Depois, treinamos $h_2$ e $h_3$.}
+
+	\end{figure}
+
+\end{frame}
+
+\begin{frame}{Detecção de Anomalias}
+
+	Podemos usar \emph{autoencoders} para detectar anomalias.
+
+	\begin{figure}
+		\centering
+		\includegraphics[scale=0.4]{img/anomaly.pdf}
+        \caption{Distribuição do erro de reconstrução de dados normais e anômalos.}
+	\end{figure}
+
+\end{frame}
+
+\begin{frame}{Remoção de Ruído}
+
+    \begin{itemize}
+        \item Podemos usar um \emph{Denoising Autoencoder} para remover ruído de imagens.
+    \end{itemize}
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.22]{img/denoising.pdf}
+        \caption{Remoção de ruído de dígitos do MNIST.}
+    \end{figure}
+
+\end{frame}
+
+\begin{frame}{Colorização de Imagens}
+
+    \begin{itemize}
+        \item Também podemos colorizar imagens com \emph{autoencoders}.
+    \end{itemize}
+   
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.2]{img/coloring.png}
+        \caption{Colorização de um imagem com um \emph{autoencoder}}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Variational Autoencoders}
+    \begin{itemize}
+        \item Modelo generativo e probabilístico.
+    \end{itemize}
+
+	\begin{figure}
+
+		\centering
+
+		\begin{tikzpicture}[
+				roundnode/.style={draw=black, thick, rounded corners}
+			]
+
+			\node[roundnode, minimum width=32mm, color=Gray] (output) at (0, 6) {Saída};
+            \node[roundnode, minimum width=16mm, color=Gray] (h2) at (0, 5) {$h_2$};
+			\node[roundnode, minimum width=6mm, minimum height=6mm, fill=Cerulean] (z) at (0, 4) {$z$};
+            \node[roundnode, minimum height=6mm, fill=Dandelion] (trick) at (0, 3) {$\mu + \sigma \odot \epsilon$};
+			\node[roundnode, minimum width=6mm, minimum height=6mm, fill=YellowGreen] (mean) at (-0.5, 2) {$\mu$};
+            \node[roundnode, minimum width=6mm, minimum height=6mm, fill=YellowGreen] (sd) at (0.5, 2) {$\sigma$};
+            \node[roundnode, minimum width=16mm, color=Gray] (h1) at (0, 1) {$h_1$};
+			\node[roundnode, minimum width=32mm, color=Gray] (input) at (0, 0) {Entrada};
+
+			\draw[->, thick, Gray] (input) -- (h1);
+			\draw[->, thick, Gray] (h1) -- (mean);
+			\draw[->, thick, Gray] (h1) -- (sd);
+            \draw[->, thick] (mean) -- (trick);
+            \draw[->, thick] (sd) -- (trick);
+            \draw[->, thick] (trick) -- (z);
+            \draw[->, thick, Gray] (z) -- (h2);
+            \draw[->, thick, Gray] (h2) -- (output);
+
+		\end{tikzpicture}
+
+		\caption{
+			\justifying
+            Esquema de um \emph{variational autoencoder}, onde $\epsilon \sim \mathcal{N}(0, 1)$.
+		}
+
+	\end{figure}
+\end{frame}
+
+\begin{frame}{Variational Autoencoders - Sampling}
+    \begin{itemize}
+        \item Kullback-Leibler divergence.
+    \end{itemize}
+
 \end{frame}
 
 \end{document}
